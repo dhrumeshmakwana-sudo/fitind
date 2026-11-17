@@ -1,0 +1,15 @@
+.git
+.github
+node_modules
+client/dist
+data
+*.db
+*.db-shm
+*.db-wal
+.bun-cache
+.space-build
+.space-build-cvm
+.harness
+.env
+.env.*
+*.log

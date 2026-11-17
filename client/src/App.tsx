@@ -24,19 +24,14 @@ type Targets = NonNullable<ApiResponse<typeof api, "getSession">["targets"]>;
 type Food = ApiResponse<typeof api, "searchFoods">["foods"][number];
 type DiaryEntry = ApiResponse<typeof api, "getDiary">["entries"][number];
 type Exercise = ApiResponse<typeof api, "searchExercises">["exercises"][number];
-type RoutineSummary = ApiResponse<typeof api, "getRoutines">["routines"][number];
 type RoutineDetail = NonNullable<ApiResponse<typeof api, "getRoutine">["routine"]>;
 type WorkoutSessionData = NonNullable<
   ApiResponse<typeof api, "getWorkoutSession">["session"]
 >;
 type SessionExerciseData = WorkoutSessionData["exercises"][number];
-type PrRecord = ApiResponse<typeof api, "getPersonalRecords">["records"][number];
 type ProgressData = ApiResponse<typeof api, "getProgress">;
 type MeasurementRow = ProgressData["measurements"][number];
-type RecipeSummary = ApiResponse<typeof api, "searchRecipes">["recipes"][number];
 type RecipeDetailData = NonNullable<ApiResponse<typeof api, "getRecipe">["recipe"]>;
-type ChallengeSummaryData =
-  ApiResponse<typeof api, "getChallenges">["challenges"][number];
 
 const MUSCLE_GROUPS = [
   "Chest",
@@ -3612,7 +3607,6 @@ function FoodDiary({ token }: { token: string }) {
             {MEAL_ORDER.map((meal) => {
               const entries = data.entries.filter((e) => e.meal === meal);
               const mt = data.mealTotals[meal];
-              const isAdding = addingMeal === meal && !picked;
               return (
                 <section
                   key={meal}
@@ -9154,8 +9148,6 @@ function StatusList({
 type AdminFoodRow = ApiResponse<typeof api, "adminListFoods">["foods"][number];
 type AdminExerciseRow =
   ApiResponse<typeof api, "adminListExercises">["exercises"][number];
-type AdminRecipeRow =
-  ApiResponse<typeof api, "adminListRecipes">["recipes"][number];
 
 function AdminPanel({ token }: { token: string }) {
   const [tab, setTab] = useState<
