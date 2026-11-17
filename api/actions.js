@@ -11811,12 +11811,13 @@ async function handleRequest(req, serveStatic) {
 }
 
 // server/vercel-entry.ts
-async function handler(req) {
-  if (req.method !== "POST") {
-    return new Response("method not allowed", { status: 405 });
-  }
+async function POST(req) {
   return handleRequest(req);
 }
+async function GET() {
+  return new Response("method not allowed", { status: 405 });
+}
 export {
-  handler as default
+  GET,
+  POST
 };
