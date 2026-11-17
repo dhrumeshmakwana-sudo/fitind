@@ -11798,7 +11798,7 @@ async function handleAction(req) {
   }
 }
 async function handleRequest(req, serveStatic) {
-  const url = new URL(req.url);
+  const url = new URL(req.url, "http://localhost");
   if (req.method === "POST" && url.pathname === "/actions") {
     return handleAction(req);
   }

@@ -195,7 +195,9 @@ export async function handleRequest(
   req: Request,
   serveStatic?: StaticHandler,
 ): Promise<Response> {
-  const url = new URL(req.url);
+  // Some runtimes (Vercel's Node bridge) hand us a relative path
+  // ("/actions") instead of an absolute URL — give URL a fallback base.
+  const url = new URL(req.url, "http://localhost");
   if (req.method === "POST" && url.pathname === "/actions") {
     return handleAction(req);
   }
