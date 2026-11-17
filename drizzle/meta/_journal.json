@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1794848869246,
+      "tag": "0001_initial",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1794848869246,
+      "tag": "0002_phase_1_foundation",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1794850812181,
+      "tag": "0003_phase_2_foods_diary",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1794851687846,
+      "tag": "0004_phase_3_workouts",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1794894627201,
+      "tag": "0005_phase_4_progress_water_recipes_challenges",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1794899106484,
+      "tag": "0006_phase_5_admin_privacy_perf",
+      "breakpoints": true
+    }
+  ]
+}

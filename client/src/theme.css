@@ -1,0 +1,226 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap');
+@import "tailwindcss";
+@import "tailwindcss-safe-area";
+
+@theme {
+  --text-xs: 12px;
+  --text-xs--line-height: 16px;
+  --text-sm: 14px;
+  --text-sm--line-height: 20px;
+  --text-base: 16px;
+  --text-base--line-height: 24px;
+  --text-lg: 18px;
+  --text-lg--line-height: 28px;
+  --text-xl: 20px;
+  --text-xl--line-height: 28px;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 32px;
+  --text-3xl: 30px;
+  --text-3xl--line-height: 36px;
+  --text-4xl: 36px;
+  --text-4xl--line-height: 40px;
+  --font-sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Archivo", system-ui, sans-serif;
+}
+
+/* FITIND design system — the first design's basic palette (restored
+   2026-11-17 at the user's request; the plum scheme was rejected).
+   Warm cream #EBE9E1 canvas, near-black ink #16140F text, vivid
+   red-orange #E43D12 as the brand accent, near-black sidebar/panels,
+   and the small palette accents #D6536D (rose) / #FFA286 (peach) /
+   #EFB11D (amber) for macro bars and small highlights. Flat colours
+   only — no gradients, no photography. Typography and the colour
+   steps carry the design.
+   Contrast (WCAG relative luminance, measured 2026-11-17): ink on
+   cream 15.1:1; --dim 6.6:1 and --faint 5.6:1 on cream (4.9:1 on the
+   deepest cream step); the brand accent measures 3.5:1 on cream, so
+   it is used for large/bold display, the calorie ring, bars and
+   graphics, while small accent-coloured text uses --accent-text
+   #AE2C07 (5.5:1 on cream, 4.8:1 on the deepest step) and filled
+   buttons use --accent-btn #C9330A (white text 5.3:1). */
+:root {
+  color-scheme: light;
+  --bg: #ebe9e1;
+  --surface: #f7f5ee;
+  --surface-2: #e1dccb;
+  --surface-3: #cfc9b8;
+  --input: #f7f5ee;
+  --ink: #16140f;
+  --text: #16140f;
+  --dim: #55503f;
+  --faint: #625b47;
+  --border: #d8d2bf;
+  --border-strong: #a79f83;
+  --accent: #e43d12;
+  --accent-btn: #c9330a;
+  --accent-dark: #a82b08;
+  --accent-text: #ae2c07;
+  --accent-soft: rgba(228, 61, 18, 0.1);
+  --rose: #d6536d;
+  --peach: #ffa286;
+  --amber: #efb11d;
+  --ok: #1b6e3e;
+  --warn: #9a6508;
+  --radius: 10px;
+  --shadow-card: 0 1px 2px rgba(22, 20, 15, 0.07), 0 8px 24px rgba(22, 20, 15, 0.09);
+  --space-surface: var(--surface);
+  --space-surface-alt: var(--surface-2);
+  --space-muted: var(--dim);
+  --space-border: var(--border);
+  --space-accent: var(--accent);
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Headings: strong, tight, sentence case — hierarchy from size and
+   weight, not from shouting. */
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Small letter-spaced label — used sparingly. */
+.kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Dashboard ring draw-in. */
+@keyframes ring-in {
+  from {
+    stroke-dashoffset: var(--ring-circ);
+  }
+  to {
+    stroke-dashoffset: var(--ring-off);
+  }
+}
+.ring-anim {
+  animation: ring-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Gentle entrance — opacity and a small rise, nothing louder. */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-up {
+  animation: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.fade-up-1 {
+  animation: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+.fade-up-2 {
+  animation: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.16s both;
+}
+
+/* Landing word ticker — a slow, heavy-type marquee in the palette.
+   The track holds the word list twice and slides by half its width. */
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.ticker-track {
+  animation: ticker-scroll 36s linear infinite;
+}
+
+/* Landing hero wordmark rise. */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.hero-rise {
+  animation: hero-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Skip-to-content link: invisible until keyboard focus, then a clear
+   coral pill at the top of the page. */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  z-index: 100;
+  border-radius: 8px;
+  background: var(--accent-btn);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 18px;
+  transition: top 0.15s ease;
+}
+.skip-link:focus-visible {
+  top: 12px;
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring-anim,
+  .fade-up,
+  .fade-up-1,
+  .fade-up-2,
+  .ticker-track,
+  .hero-rise,
+  .animate-pulse {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Phone tap targets: comfortable touch size. */
+@layer base {
+  button,
+  [role="button"],
+  select,
+  summary,
+  input:not([type="checkbox"], [type="radio"]) {
+    min-height: 2.75rem;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+input[type="date"] {
+  color-scheme: light;
+}
