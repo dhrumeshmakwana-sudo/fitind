@@ -1,1 +1,21 @@
-{"$schema":"https://openapi.vercel.sh/vercel.json","buildCommand":"bun run build:client","installCommand":"bun install","outputDirectory":"client/dist","rewrites":[{"destination":"/api/actions","source":"/actions"},{"destination":"/index.html","source":"/((?!api/|assets/|.*\\..*).*)"}]}
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "bun run build:client && bun run build:api",
+  "installCommand": "bun install",
+  "outputDirectory": "client/dist",
+  "rewrites": [
+    {
+      "destination": "/api/actions",
+      "source": "/actions"
+    },
+    {
+      "destination": "/index.html",
+      "source": "/((?!api/|assets/|.*\\..*).*)"
+    }
+  ],
+  "functions": {
+    "api/actions.js": {
+      "includeFiles": "drizzle/**"
+    }
+  }
+}

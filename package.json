@@ -8,7 +8,8 @@
     "build": "bun run build:server && bun run build:client",
     "build:server": "cd server && bun build ./src/actions.ts --target=bun --outfile=./dist/actions.js",
     "build:client": "bun ./client/build.mjs",
-    "start": "bun server/standalone.ts"
+    "start": "bun server/standalone.ts",
+    "build:api": "bun run build-api.mjs"
   },
   "dependencies": {
     "@hatch/space-sdk": "file:./vendor/space-sdk",
