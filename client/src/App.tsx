@@ -4937,8 +4937,21 @@ function SetRow({
       reps: number | null;
       loadKg: number | null;
       durationSeconds: number | null;
-      completed: boolean;
-    }) => await api.updateSet({ token, setId: set.id, ...args }),
+      completed?: boolean;
+    }) =>
+      await api.updateSet({
+        token,
+        setId: set.id,
+        reps: args.reps,
+        loadKg: args.loadKg,
+        durationSeconds: args.durationSeconds,
+        // Only the done-toggle sends `completed`; a blur value-save
+        // omits it so it can never revert a toggle it raced with
+        // (Phase 6 fix — the server patches only fields it receives).
+        ...(args.completed !== undefined
+          ? { completed: args.completed }
+          : {}),
+      }),
     onSuccess: (res, args) => {
       if (!res.ok) {
         setError(res.error ?? "Could not save set.");
@@ -4956,7 +4969,9 @@ function SetRow({
 
   const saveValues = () => {
     if (update.isPending) return;
-    update.mutate({ ...values(), completed: set.completed });
+    // Values only — never send `completed` from a blur save (see the
+    // mutation above): the done state belongs to the toggle alone.
+    update.mutate({ ...values() });
   };
 
   const inputClsSet =
@@ -10613,6 +10628,23 @@ function BuildStatus() {
 
       <div className="mt-8">
         <StatusList
+          title="Live — Phase 6 · End-to-end testing & production readiness (2026-11-17)"
+          tone="ok"
+          items={[
+            "Full end-to-end suite run against the finished app — every journey below was executed for real (server actions plus live UI drives at 390 px and 1,440 px), with arithmetic hand-checked throughout. Auth: signup, duplicate-email refusal, wrong-password refusal, login/logout, session persistence across reload, log-out-other-sessions killing only the other token, and password change (old password dead, new one works). The expired-session path is enforced in code (expired tokens are deleted and refused); it was verified by code inspection because a live test would need a 30-day-old token.",
+            "Onboarding math hand-checked for male and female profiles across every goal: male BMR 1,640 / TDEE 2,542 → gain 2,842, maintenance 2,542, fat loss 2,092, strength 2,742; female BMR 1,345 / TDEE 1,850 → fat loss 1,400 (safety floor applied), maintenance 1,850 — every macro split matched to the gram. A manual override of 2,000 kcal produced the exact manual split and was respected identically on the dashboard, in the diary and in Progress.",
+            "Food & diary: alias search ('golgappa' → Pani Puri) and the high-protein filter verified; 150 g paneer = 397.5 kcal by grams and 2 rotis = 178.2 kcal by servings; duplicate submissions returned the existing entry; copy-yesterday copied once and refused into a non-empty day; diary totals equalled dashboard totals exactly (575.7, then 559.6 kcal after a recipe serving). Snapshot integrity proven live: an admin edited Paneer 265 → 300 kcal, Food Search showed 300 immediately, and an existing diary entry still read exactly 265 kcal.",
+            "Workouts: template copy with edited targets (bench arrived with 3 sets, not 4), full routine CRUD, live session with add/edit/delete sets, substitute (original marked skipped, replacement inserted), skip, resume-instead-of-duplicate, and an in-progress session invisible to history and records. Finish produced exactly 1,320 kg volume (60 × 8/8/6), the bench record read 60 kg × 8 with Epley estimate 76 kg, and progression matched. Discarding a session left no trace.",
+            "Water, recipes, challenges, progress: 250 + 500 ml = 750 ml, edit/delete/target all exact and identical on dashboard and Progress; two recipes (Besan Chilla, Khichdi with Kadhi) recomputed by hand from their ingredients to the decimal; a recipe serving raised the diary by exactly its per-serving values; a user recipe computed 282.5 kcal / 20 g protein with its diet flag derived; challenges from both templates plus a custom one — 4 hand ticks = 100% and a 1-day streak, pause refused ticking with a clear message, restart cleared checks and kept tasks; Progress showed only real logged days at 7 and 30 days (the 90/180/365 ranges share the same windowing code and their controls render), with macro averages over logged days only.",
+            "Two-user isolation suite: a second account attacked the first account's diary entries, routines, sessions, sets, water, measurements, recipes, meal plan and challenges by direct ID calls — every read, edit and delete was refused by the server ('not found'), the second account's own views stayed empty, it could not even log the first account's custom food, and the first account's data was verified untouched afterwards.",
+            "Admin & privacy: non-admins refused by every admin action; the first-admin claim worked once and was closed for the second user; delete guards refused a food used in recipes and an exercise used in history, with reasons; the audit log recorded the claim and every edit; the custom-food review list carries no owner identity. A data-rich export contained all 14 sections with real rows. Account deletion removed exactly that user's contributions from every aggregate (users 5→4, diary 4→3, water 2→1, custom foods 2→1) and left everyone else untouched.",
+            "Two real bugs were found by the suite and fixed. (1) Finishing a workout rewrote the session's notes from a value loaded when the finish began, so a note saved moments earlier could be lost — the finish action now only writes notes it was actually given; re-verified (the note survives and is returned). (2) In the live workout screen, a set's value auto-save (on blur) carried the done state it had when typing started, so tapping the done tick right after typing could be undone by the slower save landing last — value saves no longer send the done state at all; only the tick sends it. Re-verified live: the set stays done at 480 kg volume, and editing the load afterwards (132 lb) updates the volume to exactly 1,056 lb without un-marking the set.",
+            "Live UI drives: signup → all four onboarding steps → dashboard read exactly 2,887 kcal; the rest timer counted down in real time (2:00 → 1:35), +30 s added exactly 30 (→ 2:03), and the finished state showed the green REST DONE banner (the timer has no pause button by design — the spec's pause/restart applies to challenges, which implement both); imperial units converted both ways (132 lb entered → stored in kg → 1,056 lb volume; records showed 132.3 lb × 8 with Epley 167.6 lb); keyboard pass — the skip link is the first Tab stop and clearly visible, Escape closes the More panel; no console errors and no horizontal overflow on any page at either width; paged lists still capped (food search offset 140 returned the last 3 of 143 with the total).",
+            "Production readiness: FITIND is complete and verified inside this platform. Public deployment is a separate step (see the Deployment list below) — it needs the owner's own hosting account and a small port of the platform layer; nothing about it is faked or half-connected here.",
+          ]}
+        />
+
+        <StatusList
           title="Fix — landing band overlap (2026-11-17)"
           tone="ok"
           items={[
@@ -10731,10 +10763,10 @@ function BuildStatus() {
         />
 
         <StatusList
-          title="Next — later phases"
+          title="Next — deployment (separate step, not started)"
           tone="dim"
           items={[
-            "Phase 6 — Automated end-to-end suite, including a scripted two-user isolation test, and production-readiness review.",
+            "Public deployment and a public code repository happen outside this app, under the project owner's own accounts: a hosting account (a host with a persistent disk, or Vercel + a Postgres database), a GitHub repository for the code, and a small port of this platform's action/database layer to a standalone server. FITIND itself is finished and verified — nothing in the app is waiting on code.",
           ]}
         />
 
@@ -10753,8 +10785,12 @@ function BuildStatus() {
         <section className="border-t border-[var(--border)] py-6">
           <h3 className="kicker text-[var(--dim)]">Tests</h3>
           <p className="mt-3.5 max-w-2xl text-sm leading-relaxed text-[var(--dim)]">
-            No automated suite exists yet — it arrives in Phase 6, and no
-            test is claimed before it runs. Phase 1 was verified manually in
+            Phase 6 (2026-11-17) ran the full end-to-end suite described
+            in the Phase 6 list above — every area of the app, a scripted
+            two-user isolation suite, and live UI drives at phone and
+            desktop widths; two real bugs were found, fixed and
+            re-verified, and no failed test is marked as passed. The
+            earlier phases were verified as they were built: Phase 1 was verified manually in
             the live app: signup → onboarding → dashboard, profile edits
             persisting across logout and login, weight logging, two-user
             data isolation, and session protection. After the UI redesign
@@ -10844,8 +10880,23 @@ function BuildStatus() {
             during that drive (the sidebar wordmark inheriting ink on
             the near-black sidebar, and the login panel's scoped accent
             token overriding its own background) were fixed and
-            re-verified on screenshots. Details live in the project's
-            BUILD_STATUS ledger.
+            re-verified on screenshots. Phase 6 then re-ran everything
+            end to end on the finished app: the reference profile's
+            targets were exact for both sexes and every goal; diary,
+            dashboard and Progress totals agreed to the decimal; a
+            finished Push session totalled exactly 1,320 kg with the
+            60 kg × 8 bench record (Epley 76 kg); two recipes matched
+            hand recomputation; a challenge read 100% from four hand
+            ticks; twenty-plus cross-account ID attacks were all refused
+            by the server; an admin's Paneer edit (265 → 300 kcal) left
+            an old diary entry at exactly 265 kcal; a deleted account's
+            rows vanished from every aggregate while other users were
+            untouched; and the live UI drive covered signup →
+            onboarding → a 2,887 kcal dashboard, the rest timer's full
+            countdown to its REST DONE state, imperial conversion
+            (132 lb → 1,056 lb volume), keyboard navigation and both
+            viewport widths with no console errors. Details live in the
+            project's BUILD_STATUS ledger.
           </p>
         </section>
       </div>

@@ -3655,14 +3655,15 @@ export const Actions = {
         0,
         Math.round((now.getTime() - session.startedAt.getTime()) / 1000),
       );
+      // Only write notes when the caller actually sent them: rewriting
+      // the value loaded at the top of this handler could clobber a
+      // note saved by a concurrent setSessionNotes call (Phase 6 fix).
+      const finishPatch: Partial<typeof schema.workoutSessions.$inferInsert> =
+        { status: "completed", endedAt: now, durationSeconds };
+      if (args.notes !== undefined) finishPatch.notes = args.notes;
       await db
         .update(schema.workoutSessions)
-        .set({
-          status: "completed",
-          endedAt: now,
-          durationSeconds,
-          notes: args.notes !== undefined ? args.notes : session.notes,
-        })
+        .set(finishPatch)
         .where(eq(schema.workoutSessions.id, session.id));
       ctx.invalidateQueries();
       const updated = await ownSession(db, resolved.userId, session.id);
